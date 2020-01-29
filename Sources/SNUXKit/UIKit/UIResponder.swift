@@ -9,6 +9,7 @@
 import UIKit
 
 extension UIResponder {
+    @discardableResult
     open func present(error: Error) -> Bool {
         guard let self = self as? UIWindow else {
             return next?.present(error: willPresent(error: error)) ?? false
