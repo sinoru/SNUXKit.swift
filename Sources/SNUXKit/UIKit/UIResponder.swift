@@ -10,6 +10,7 @@ import UIKit
 
 extension UIResponder {
     @discardableResult
+    @objc
     open func present(error: Error) -> Bool {
         guard let self = self as? UIWindow else {
             return next?.present(error: willPresent(error: error)) ?? false
@@ -50,6 +51,7 @@ extension UIResponder {
         return true
     }
 
+    @objc
     open func willPresent(error: Error) -> Error {
         if self is UIWindow {
             return UIApplication.shared.delegate?.application(UIApplication.shared, willPresentError: error) ?? error
