@@ -24,11 +24,28 @@ extension UIResponder {
     @discardableResult
     @objc
     open func present(error: Error) -> Bool {
-        guard let self = self as? UIWindow else {
-            return next?.present(error: willPresent(error: error)) ?? false
+        return _present(error: error, from: self as? UIWindow)
+    }
+
+    @objc
+    open func willPresent(error: Error) -> Error {
+        if self is UIApplication {
+            return UIApplication.shared.delegate?.application(UIApplication.shared, willPresentError: error) ?? error
+        } else {
+            return error
+        }
+    }
+
+    private func _present(error: Error, from window: UIWindow?) -> Bool {
+        if let next = next {
+            return next._present(error: error, from: self as? UIWindow)
         }
 
-        guard var viewController = self.rootViewController else {
+        guard let window = window ?? UIApplication.shared.keyWindow else {
+            return false
+        }
+
+        guard var viewController = window.rootViewController else {
             return false
         }
 
@@ -61,15 +78,6 @@ extension UIResponder {
 
         viewController.present(alertController, animated: true)
         return true
-    }
-
-    @objc
-    open func willPresent(error: Error) -> Error {
-        if self is UIWindow {
-            return UIApplication.shared.delegate?.application(UIApplication.shared, willPresentError: error) ?? error
-        } else {
-            return error
-        }
     }
 }
 
